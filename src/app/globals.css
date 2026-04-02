@@ -1,16 +1,19 @@
 @import "tailwindcss";
 @import "react-phone-number-input/style.css";
 
+/* ==========================================================================
+   DESIGN TOKENS & RESET
+   ========================================================================== */
 :root {
-  --auth-heading: #1e293b;
-  --auth-subtext: #64748b;
-  --auth-border: #e2e8f0;
-  --auth-btn: #1f2d3d;
-  --logout-btn: #177a9c;
-  --page-bg: #edf2f5;
-  --brand-blue: #2b4558;
-  --brand-dark: #1f3647;
-  --teal: #0e7490;
+  --auth-shell-width: 1040px;
+  --auth-shell-height: 580px;
+  --panel-dark: #1d3243;
+  --panel-white: #ffffff;
+  --text-main: #1C3141;
+  --text-muted: #64748b;
+  --radius-outer: 24px;
+  --radius-inner: 20px;
+  --auth-border-gap: 6px;
 }
 
 * {
@@ -21,167 +24,115 @@ html,
 body {
   padding: 0;
   margin: 0;
-  min-height: 100%;
-  font-family: Inter, Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
 }
 
-body {
-  background: var(--page-bg);
-  color: #111827;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* =========================
-   AUTH BACKGROUND
-========================= */
+/* ==========================================================================
+   AUTH BACKGROUND (Dark blue with wavy overlay)
+   ========================================================================== */
 .auth-bg {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background: url('/assets/bg.jpg') center/cover no-repeat;
+  /* Image path from your asset list */
+  background: #0a1118 url('/assets/bg.jpg') center/cover no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 40px 24px;
-  overflow-x: hidden;
+  z-index: 1;
 }
 
-/* Background Dark Overlay */
 .auth-bg::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: #00000099; /* 60% opacity black */
-  z-index: 0;
+  /* Dark overlay to make the shell pop */
+  background: rgba(0, 0, 0, 0.65);
+  z-index: -1;
 }
 
+/* ==========================================================================
+   AUTH SHELL (The parent container)
+   ========================================================================== */
 .auth-shell {
   position: relative;
-  z-index: 1;
-  width: 900px;
+  width: var(--auth-shell-width);
   max-width: 100%;
-  min-height: 540px;
+  height: var(--auth-shell-height);
   display: flex;
-  background: white;
-  border-radius: 12px;
+  background: var(--panel-dark);
+  border-radius: var(--radius-outer);
   overflow: hidden;
-  box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.45);
+  box-shadow:
+    0 50px 100px -20px rgba(0, 0, 0, 0.6),
+    0 30px 60px -30px rgba(0, 0, 0, 0.7);
 }
 
-/* =========================
-   LEFT PANEL
-========================= */
+/* ==========================================================================
+   LEFT PANEL (Branding & Illustration)
+   ========================================================================== */
 .left-panel {
-  flex: 1;
-  background: #1c2b38; /* Figma dark bluish tone */
-  padding: 48px;
+  flex: 1.25;
+  background: transparent;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center; /* Centering vertically */
-  text-align: center;
+  justify-content: space-between;
+  padding: 48px 40px 42px 48px;
   position: relative;
 }
 
-.branding-wrap {
-  margin-bottom: 40px;
-}
-
-.top-logo {
-  width: 160px;
-  height: auto;
-  object-fit: contain;
-}
-
-.illustration-wrap {
-  width: 100%;
-  max-width: 300px;
-}
-
-.bottom-illustration {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
-/* =========================
-   RIGHT PANEL (FORM)
-========================= */
+/* ==========================================================================
+   RIGHT PANEL (The white form card)
+   ========================================================================== */
 .right-panel {
   flex: 1;
-  background: #ffffff;
-  padding: 60px 54px;
+  /* Match the user request for a "thin border/gap" effect */
+  margin: var(--auth-border-gap);
+  background: var(--panel-white);
+  border-radius: var(--radius-inner);
+  padding: 48px 44px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   position: relative;
-  /* Premium subtle gradient border */
-  border: 1px solid transparent;
-  background-clip: padding-box, border-box;
-  background-origin: padding-box, border-box;
-  background-image: linear-gradient(to right, #fff, #fff), 
-                    linear-gradient(180deg, #1C3141 28.73%, #487EA7 233.43%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
 }
 
-/* =========================
-   TYPOGRAPHY
-========================= */
+/* ==========================================================================
+   FORM TYPOGRAPHY
+   ========================================================================== */
 .auth-title {
+  color: var(--text-main);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
   margin: 0;
-  color: #1e293b;
-  font-size: 28px;
-  line-height: 1.25;
-  font-weight: 700;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
 }
 
 .auth-subtitle {
-  color: #64748b;
-  font-size: 15px;
-  line-height: 1.6;
+  color: var(--text-main);
+  font-size: 16px;
   font-weight: 400;
-  margin: 16px 0 0 0;
+  line-height: 24px;
+  margin-top: 14px;
+  opacity: 0.9;
 }
 
-.auth-label {
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.auth-muted {
-  color: #94a3b8;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.login-form-body {
-  margin-top: 36px;
-  display: flex;
-  flex-direction: column;
-}
-
-.floating-label {
-  position: absolute;
-  top: -10px;
-  left: 12px;
-  z-index: 10;
-  background: white;
-  padding: 0 4px;
-}
-
+/* ==========================================================================
+   FORM CONTROLS (Phone field floating style)
+   ========================================================================== */
 .exact-phone-field {
   width: 100%;
   height: 58px;
-  border: 1px solid #cbd5e1;
-  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
   background: #ffffff;
-  padding: 0 16px;
+  padding: 0 18px;
   display: flex;
   align-items: center;
   position: relative;
@@ -189,47 +140,68 @@ img {
 }
 
 .exact-phone-field:focus-within {
-  border-color: #1f2d3d;
-  box-shadow: 0 0 0 4px rgba(31, 45, 61, 0.05);
+  border-color: var(--panel-dark);
+  box-shadow: 0 0 0 3px rgba(29, 50, 67, 0.08);
 }
 
 .exact-phone-field .PhoneInput {
   width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .exact-phone-field .PhoneInputInput {
-  font-size: 16px;
-  letter-spacing: 0.5px;
-  color: #1e293b;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--text-main);
   border: none;
   outline: none;
   background: transparent;
+  width: 100%;
 }
 
-.login-terms {
-  margin-top: 28px;
-  color: #64748b;
-  font-size: 13px;
+.phone-floating-label {
+  position: absolute;
+  top: -10px;
+  left: 14px;
+  z-index: 10;
+  background: white;
+  padding: 0 5px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
 }
 
-/* Buttons */
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
 .primary-btn {
   width: 100%;
-  height: 52px;
+  height: 54px;
   border: none;
-  border-radius: 10px;
-  background: #1f2d3d;
+  border-radius: 12px;
+  background: var(--panel-dark);
   color: #ffffff;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
-  margin-top: 32px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 12px rgba(29, 50, 67, 0.2);
 }
 
-.primary-btn:hover {
-  background: #2c3e50;
+.primary-btn:hover:not(:disabled) {
+  background: #243d52;
   transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(29, 50, 67, 0.3);
+}
+
+.primary-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .primary-btn:disabled {
@@ -237,214 +209,88 @@ img {
   color: #94a3b8;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
-.logout-btn {
-  height: 38px;
-  border: none;
-  border-radius: 6px;
-  padding: 7px 20px;
-  background: #0e7490;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
+/* ==========================================================================
+   MISC
+   ========================================================================== */
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-/* =========================
-   PROFILE IMAGE
-========================= */
-.profile-upload-box {
-  width: 92px;
-  height: 92px;
-  border: 1px dashed #d2d2d2;
-  border-radius: 6px;
-  background: #fafafa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  cursor: pointer;
-  margin: 0 auto 14px auto;
-}
-
-/* =========================
-   EXAM
-========================= */
-.exam-topbar {
-  height: 64px;
-  background: #ffffff;
-  border-bottom: 1px solid #dbe3e8;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-}
-
-.exam-logo-blue {
-  width: 115px;
-  height: auto;
-  display: block;
-}
-
-.exam-card {
-  background: white;
-  border: 1px solid #dbe3e8;
-  border-radius: 4px;
-}
-
-.option-row {
-  border: 1px solid #cfd8df;
-  background: #fff;
-  border-radius: 3px;
-  min-height: 44px;
-}
-
-.secondary-btn {
-  height: 44px;
-  border-radius: 4px;
-  background: #d9d9d9;
-  color: #111827;
-  font-size: 13px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-}
-
-.shadow-soft {
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-}
-
-/* =========================
-   RESULT PAGE
-========================= */
-.result-card {
-  background: var(--brand-dark);
-  color: white;
-  border-radius: 8px;
-  padding: 24px 32px;
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.result-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.result-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  margin-right: 12px;
-}
-
-/* =========================
-   MOBILE
-========================= */
-@media (max-width: 840px) {
-  .auth-bg {
-    padding: 24px 16px;
-  }
-
-  .auth-shell {
-    width: 100%;
-    max-width: 480px;
-    min-height: auto;
-    flex-direction: column;
-    height: auto;
-    border-radius: 12px;
-  }
-
-  .left-panel {
-    flex: none;
-    padding: 40px 24px;
-    height: auto;
-  }
-
-  .branding-wrap {
-    margin-bottom: 24px;
-  }
-
-  .top-logo {
-    width: 140px;
-  }
-
-  .bottom-illustration {
-    max-width: 240px;
-  }
-
-  .right-panel {
-    flex: none;
-    width: 100%;
-    padding: 40px 28px;
-    border-radius: 0 0 12px 12px;
-  }
-
-  .auth-title {
-    font-size: 24px;
-  }
-
-  .auth-subtitle {
-    font-size: 14px;
-  }
-
-  .login-form-body {
-    margin-top: 28px;
-  }
-}
-
-@media (max-width: 480px) {
-  .left-panel {
-    min-height: 200px;
-  }
-
-  .right-panel {
-    padding: 24px 16px;
-  }
-}
-
-/* =========================
-   ANIMATIONS
-   ========================= */
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-.animate-fade-in-up {
-  animation: fade-in-up 0.4s ease-out forwards;
+.top-logo {
+  width: 240px;
+  height: auto;
+  margin-bottom: 0;
 }
 
-/* =========================
-   SKELETON SHIMMER 
-   ========================= */
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+/* TABLET & MOBILE (Below shell width) */
+@media (max-width: 1060px) {
+  .auth-shell {
+    width: 100%;
+    height: auto;
+    min-height: 540px;
+  }
+
+  .top-logo {
+    width: 180px;
+    margin-bottom: 20px;
+  }
 }
 
-.shimmer {
-  background: -webkit-linear-gradient(90deg, #f0f3f5 25%, #e1e7eb 50%, #f0f3f5 75%);
-  background: linear-gradient(90deg, #f0f3f5 25%, #e1e7eb 50%, #f0f3f5 75%);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite linear;
+/* MOBILE STACKED LAYOUT ONLY */
+@media (max-width: 768px) {
+  .auth-bg {
+    padding: 20px 16px;
+    align-items: flex-start;
+  }
+
+  .auth-shell {
+    flex-direction: column;
+    border-radius: 20px;
+  }
+
+  .left-panel {
+    flex: none;
+    min-height: 280px;
+    padding: 36px 24px 20px;
+    align-items: center;
+  }
+
+  .right-panel {
+    margin: 8px;
+    padding: 32px 24px 28px;
+    border-radius: 16px;
+  }
+
+  .auth-title {
+    font-size: 26px;
+    text-align: center;
+  }
+
+  .auth-subtitle {
+    text-align: center;
+    font-size: 14.5px;
+  }
+
+  .primary-btn {
+    height: 50px;
+  }
 }

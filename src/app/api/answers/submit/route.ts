@@ -1,49 +1,81 @@
-import { NextRequest, NextResponse } from "next/server";
-import { forwardRequest } from "@/lib/server-api";
+import { NextResponse } from "next/server";
+import { HISTORICAL_MCQS } from "@/data/questions";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const formData = await req.formData();
-    const authHeader = req.headers.get("authorization") || "";
+    let answersRaw: any = null;
+    const contentType = req.headers.get("content-type") || "";
 
-    // Debug: log the answers payload being forwarded
-    const answersRaw = formData.get("answers");
-    console.log("[submit/route] Forwarding answers payload:", answersRaw);
+    if (contentType.includes("application/json")) {
+      const body = await req.json();
+      answersRaw = body.answers;
+    } else if (contentType.includes("multipart/form-data") || contentType.includes("application/x-www-form-urlencoded")) {
+      const formData = await req.formData();
+      const answersStr = formData.get("answers");
+      if (answersStr) {
+        try {
+          answersRaw = JSON.parse(answersStr as string);
+        } catch (e) {
+          console.error("[SUBMIT_ROUTE] Failed to parse answers from FormData", e);
+        }
+      }
+    }
 
-    const upstream = await forwardRequest("/answers/submit", {
-      method: "POST",
-      headers: authHeader ? { Authorization: authHeader } : undefined,
-      body: formData,
-    });
-
-    console.log("[submit/route] Upstream status:", upstream.status);
-
-    // Read response as text first — upstream may return plain text on error
-    const rawText = await upstream.text();
-    console.log("[submit/route] Upstream raw response:", rawText);
-
-    // Safely parse JSON; if it fails, surface the raw upstream text
-    let data: unknown;
-    try {
-      data = JSON.parse(rawText);
-    } catch {
-      // Upstream returned non-JSON (e.g. "Internal Server Error")
+    if (!answersRaw) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Upstream returned a non-JSON response",
-          upstream_status: upstream.status,
-          upstream_text: rawText,
-        },
-        { status: upstream.status >= 400 ? upstream.status : 502 }
+        { success: false, message: "No answers provided or invalid format" },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json(data, { status: upstream.status });
+    // Convert potential array of {question_id, option_id} into a lookup map if needed
+    // or keep as is if it's already a map.
+    // Based on submitAnswersApi, it sends AnswerPayload[] which is usually array.
+    const answersMap: Record<string | number, any> = {};
+    if (Array.isArray(answersRaw)) {
+      answersRaw.forEach((item: any) => {
+        if (item.question_id !== undefined) {
+          answersMap[item.question_id] = item.option_id;
+        }
+      });
+    } else {
+      // already a map
+      Object.assign(answersMap, answersRaw);
+    }
+
+    let correctCount = 0;
+    let wrongCount = 0;
+    let notAttendedCount = 0;
+
+    HISTORICAL_MCQS.forEach((question) => {
+      const userSelectedOptionId = answersMap[question.id];
+
+      if (userSelectedOptionId === undefined || userSelectedOptionId === null || userSelectedOptionId === "") {
+        notAttendedCount++;
+      } else if (Number(userSelectedOptionId) === question.correct_answer_id) {
+        correctCount++;
+      } else {
+        wrongCount++;
+      }
+    });
+
+    const totalQuestions = HISTORICAL_MCQS.length;
+    const score = correctCount; // 1 mark per question
+
+    return NextResponse.json({
+      success: true,
+      message: "Exam submitted successfully",
+      score,
+      correct: correctCount,
+      wrong: wrongCount,
+      not_attended: notAttendedCount,
+      total_questions: totalQuestions,
+      submitted_at: new Date().toISOString()
+    });
   } catch (error) {
-    console.error("[submit/route] Unexpected error:", error);
+    console.error("[SUBMIT_ROUTE_ERROR]", error);
     return NextResponse.json(
-      { success: false, message: "Failed to submit answers", error: String(error) },
+      { success: false, message: "Internal server error during submission" },
       { status: 500 }
     );
   }

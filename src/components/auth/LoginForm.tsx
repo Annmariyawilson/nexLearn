@@ -39,11 +39,7 @@ export default function LoginForm() {
       setLoading(true);
       await sendOtpApi(data.mobile);
       dispatch(setMobile(data.mobile));
-      
-      // Store mobile for OTP page fallback access
       localStorage.setItem("nexlearn_mobile", data.mobile);
-      
-      // ✅ Navigate FORWARD to OTP page
       router.replace("/verify-otp");
     } catch (error) {
       console.error(error);
@@ -54,53 +50,68 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="login-form-inner">
-      <h1 className="auth-title">Enter your phone number</h1>
+    /* 
+      Full height container with space-between:
+      Top: Titles + Form
+      Bottom: Submit Button
+    */
+    <div className="flex flex-col justify-between h-full w-full">
+      {/* ── TOP SECTION: Branding & Inputs ── */}
+      <div className="flex flex-col">
+        <h1 className="auth-title">Enter your phone number</h1>
+        
+        <p className="auth-subtitle">
+          We use your mobile number to identify your account
+        </p>
 
-      <p className="auth-subtitle">
-        We use your mobile number to identify your account
-      </p>
+        {/* BRANded Phone Input Field */}
+        <div className="relative mt-[34px]">
+          <span className="phone-floating-label">Phone number</span>
+          
+          <div className={`exact-phone-field ${errors.mobile ? "!border-red-400 !shadow-none" : ""}`}>
+            <Controller
+              name="mobile"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <PhoneInput
+                  international
+                  defaultCountry="IN"
+                  countryCallingCodeEditable={false}
+                  value={value}
+                  onChange={onChange}
+                  placeholder="1234 567891"
+                />
+              )}
+            />
+          </div>
 
-      <form onSubmit={handleSubmit(onFormSubmit)} className="login-form-body">
-        <label className="auth-label floating-label">Phone number</label>
-
-        <div className={`exact-phone-field ${errors.mobile ? "border-red-400 ring-red-100" : ""}`}>
-          <Controller
-            name="mobile"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <PhoneInput
-                international
-                defaultCountry="IN"
-                countryCallingCodeEditable={false}
-                value={value}
-                onChange={onChange}
-                placeholder="+91 1234 567891"
-              />
-            )}
-          />
+          {errors.mobile && (
+            <span className="mt-2 block text-[11px] font-medium text-red-500 pl-1">
+              {errors.mobile.message}
+            </span>
+          )}
         </div>
-        {errors.mobile && (
-          <span className="mt-1 block text-[10px] font-medium text-red-500">
-            {errors.mobile.message}
-          </span>
-        )}
 
-        <p className="auth-muted login-terms">
+        {/* Legal Terms: Wrapped naturally as per reference */}
+        <p className="mt-[24px] text-[13px] text-[#5C5C5C] leading-relaxed">
           By tapping Get started, you agree to the{" "}
-          <span className="cursor-pointer hover:underline text-[#3d4f61] font-semibold">
+          <span className="font-semibold text-[#1a2e40] cursor-pointer hover:underline underline-offset-2">
             Terms &amp; Conditions
           </span>
         </p>
+      </div>
 
+      {/* ── BOTTOM SECTION: CTA Button ── */}
+      <div className="mt-8">
         <button
           className="primary-btn"
-          type="submit"
+          type="button"
+          onClick={handleSubmit(onFormSubmit)}
           disabled={loading || !isValid}
         >
-          {loading ? "Sending..." : "Get Started"}
+          {loading ? "Please wait..." : "Get Started"}
         </button>
-      </form>
+      </div>
     </div>
   );
 }

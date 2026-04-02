@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { verifyOtpApi } from "@/lib/api";
-import { saveTokens, getAccessToken } from "@/lib/storage";
+import { saveTokens } from "@/lib/storage";
 import { useAppDispatch } from "@/store/hooks";
 import { setAuthTokens } from "@/store/features/authSlice";
 
@@ -62,27 +62,8 @@ export default function OtpForm() {
         );
       }
 
-      // Handle Redirection based on user profile completion
-      const hasProfile = resData?.user?.name || resData?.profile_exists || resData?.login;
-      
-      console.log("[OtpForm] Verification result:", { 
-          hasProfile, 
-          user: resData?.user,
-          login: resData?.login 
-      });
-
-      if (hasProfile) {
-        // Existing user with profile: direct to exam instructions
-        const token = resData?.access_token || getAccessToken();
-        if (!token) {
-          alert("Login succeeded, but no access token returned.");
-          return;
-        }
-        router.replace("/exam");
-      } else {
-        // New user or missing profile: must create profile
-        router.replace("/profile");
-      }
+      console.log("[OtpForm] OTP verified, navigating to profile setup");
+      router.replace("/profile");
     } catch (error) {
       console.error(error);
       alert("OTP verification failed. Please try again.");
@@ -102,32 +83,40 @@ export default function OtpForm() {
   };
 
   return (
-    <div className="pt-1">
-      <h2 className="auth-title">Enter the code we texted you</h2>
-      <p className="auth-subtitle">
-        We&apos;ve sent an SMS to{" "}
-        <span className="font-semibold text-slate-700">
-          {mobileNumber || "your mobile number"}
-        </span>
-      </p>
-
-      <form onSubmit={handleSubmit(onFormSubmit)} className="mt-7">
-        <label className="mb-2 block text-[12px] font-medium text-slate-500">
-          SMS code
-        </label>
-        <input
-          {...register("otp")}
-          className={`input-base ${errors.otp ? "border-red-400 focus:ring-red-100" : ""}`}
-          placeholder="123 456"
-          maxLength={6}
-        />
-        {errors.otp && (
-          <span className="mt-1 block text-[10px] font-medium text-red-500">
-            {errors.otp.message}
+    <div className="flex flex-col justify-between h-full w-full min-h-0">
+      {/* ── TOP CONTENT ── */}
+      <div className="flex flex-col">
+        <h1 className="auth-title">
+          Enter the code we texted you
+        </h1>
+        <p className="auth-subtitle">
+          We&apos;ve sent an SMS to{" "}
+          <span className="font-semibold text-[#1C3141]">
+            {mobileNumber || "your mobile number"}
           </span>
-        )}
+        </p>
 
-        <p className="mt-4 text-[11px] leading-4 text-slate-400">
+        {/* OTP Input with high-fidelity container */}
+        <div className="relative mt-7">
+          <span className="phone-floating-label">SMS code</span>
+          
+          <div className={`exact-phone-field ${errors.otp ? "!border-red-400 !shadow-none" : ""}`}>
+            <input
+              {...register("otp")}
+              className="w-full h-full bg-transparent border-none outline-none text-[18px] font-bold tracking-[4px] text-[#1C3141] placeholder:text-slate-300 placeholder:tracking-normal"
+              placeholder="000000"
+              maxLength={6}
+            />
+          </div>
+
+          {errors.otp && (
+            <span className="mt-1.5 block text-[11.5px] font-medium text-red-500 pl-1">
+              {errors.otp.message}
+            </span>
+          )}
+        </div>
+
+        <p className="mt-5 text-[12.5px] text-[#64748b] leading-relaxed">
           Your digit code is on its way. This can sometimes take a few moments
           to arrive.
         </p>
@@ -135,19 +124,23 @@ export default function OtpForm() {
         <button
           type="button"
           onClick={handleResend}
-          className="mt-3 text-[12px] font-medium text-sky-700 hover:underline"
+          className="mt-3 text-[13px] font-semibold text-[#1a2e40] underline underline-offset-2 w-fit"
         >
           Resend code
         </button>
+      </div>
 
+      {/* ── BOTTOM BUTTON ── */}
+      <div className="mt-8">
         <button
-          className="primary-btn mt-10"
-          type="submit"
+          className="primary-btn"
+          type="button"
+          onClick={handleSubmit(onFormSubmit)}
           disabled={loading || !isValid}
         >
-          {loading ? "Verifying..." : "Get Started"}
+          {loading ? "Verifying..." : "Verify & Proceed"}
         </button>
-      </form>
+      </div>
     </div>
   );
 }

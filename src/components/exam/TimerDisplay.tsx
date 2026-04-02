@@ -14,12 +14,12 @@ function TimerDisplay({ timeLeft }: TimerDisplayProps) {
   };
 
   return (
-    <div className="flex items-center gap-2 rounded bg-slate-900 px-3 py-1.5 text-white shadow-sm">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+    <div className="flex items-center gap-2 rounded-[4px] bg-[#1C3141] px-3 py-1.5 text-white shadow-sm">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="opacity-90">
         <circle cx="12" cy="12" r="10" />
         <polyline points="12 6 12 12 16 14" />
       </svg>
-      <span className="text-[13px] font-bold tabular-nums">
+      <span className="text-[14px] font-bold tabular-nums tracking-tight">
         {formatTime(timeLeft)}
       </span>
     </div>

@@ -28,7 +28,7 @@ export default function ResultPage() {
     } finally {
       clearTokens();
       dispatch(logoutUser());
-      router.replace("/");
+      window.location.href = "/";
     }
   };
 
@@ -49,96 +49,141 @@ export default function ResultPage() {
     (result.correct ?? 0) + (result.wrong ?? 0) + (result.not_attended ?? 0);
 
   return (
-    <main className="min-h-screen bg-[#edf2f5]">
-      <header className="exam-topbar">
-        <div className="flex items-center gap-2">
+    <main className="min-h-screen bg-[#F8FAFB] flex flex-col items-center">
+      
+      {/* ── Header ── */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100 h-[80px] flex items-center justify-between px-4 md:px-[60px] lg:px-[80px] shadow-sm">
+        <div className="hidden lg:block w-[90px]" /> {/* Spacer for centering */}
+        
+        <div className="flex-1 flex justify-center lg:justify-center">
           <Image
             src="/assets/logo_blue.png"
             alt="NexLearn"
-            width={115}
-            height={36}
-            className="exam-logo-blue"
+            width={160}
+            height={50}
+            className="w-[110px] md:w-[130px] lg:w-[160px] h-auto object-contain"
+            priority
           />
         </div>
-        <button onClick={handleLogout} className="logout-btn">
-          Logout
-        </button>
+
+        <div className="flex justify-end">
+          <button
+            onClick={handleLogout}
+            className="w-[90px] h-[40px] rounded-[6px] bg-[#177A9C] text-sm font-medium text-white hover:bg-[#156d8c] transition-all"
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
-      <section className="mx-auto max-w-[480px] px-4 py-12 animate-fade-in-up">
-        <div
-          className="result-card shadow-soft"
+      {/* ── Main Content Area ── */}
+      <section className="w-full max-w-[440px] pt-[140px] px-4 flex flex-col items-center pb-20">
+        
+        {/* Score Header Card */}
+        <div 
+          className="w-full max-w-[429px] flex flex-col items-center justify-center text-white mb-8 shadow-lg"
           style={{
-            background:
-              "linear-gradient(307.95deg, #1C3141 2.54%, #177A9C 79.7%)",
+            height: '150px',
+            borderRadius: '17.64px',
+            background: "linear-gradient(225deg, #1C3141 0%, #177A9C 100%)",
           }}
         >
-          <p className="mb-2 text-sm uppercase tracking-wide opacity-70">
+          <span 
+            className="opacity-90 mb-1 font-inter"
+            style={{
+              fontWeight: 500,
+              fontSize: '18.81px',
+              lineHeight: '100%',
+            }}
+          >
             Marks Obtained:
-          </p>
-          <p className="text-5xl font-bold">
-            {result.score ?? 0}{" "}
-            <span className="text-2xl opacity-60">/ {total}</span>
-          </p>
+          </span>
+          <h1 
+            className="font-inter text-[44px] md:text-[68px]"
+            style={{
+              fontWeight: 500,
+              lineHeight: '144%',
+            }}
+          >
+            {result.score ?? 0} / {total}
+          </h1>
         </div>
 
-        <div className="space-y-3">
+        {/* Metric Rows */}
+        <div className="w-full max-w-[429px] space-y-[18px] mb-10">
           {[
             {
-              icon: "Q",
+              iconBg: "#E5A42D",
               label: "Total Questions:",
               value: String(total).padStart(3, "0"),
-              color: "#475569",
-              iconBg: "#e2e8f0",
-              valColor: "text-slate-800",
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <path d="M9 17h6"></path><path d="M9 12h6"></path><path d="M9 7h6"></path>
+                </svg>
+              )
             },
             {
-              icon: "✓",
+              iconBg: "#4CAF50",
               label: "Correct Answers:",
               value: String(result.correct ?? 0).padStart(3, "0"),
-              color: "#fff",
-              iconBg: "#22c55e",
-              valColor: "text-green-600",
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <polyline points="9 11 12 14 16 8"></polyline>
+                </svg>
+              )
             },
             {
-              icon: "✕",
+              iconBg: "#EE3535",
               label: "Incorrect Answers:",
               value: String(result.wrong ?? 0).padStart(3, "0"),
-              color: "#fff",
-              iconBg: "#ef4444",
-              valColor: "text-red-500",
+              icon: (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
+                </svg>
+              )
             },
             {
-              icon: "–",
+              iconBg: "#5C5C5C",
               label: "Not Attended Questions:",
               value: String(result.not_attended ?? 0).padStart(3, "0"),
-              color: "#fff",
-              iconBg: "#94a3b8",
-              valColor: "text-slate-400",
-            },
-          ].map((item, idx) => (
-            <div
+              icon: (
+                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="4" y="3" width="16" height="16" rx="2" ry="2"></rect>
+                  <line x1="9" y1="12" x2="15" y2="12"></line>
+                </svg>
+              )
+            }
+          ].map((item) => (
+            <div 
               key={item.label}
-              className="result-row transition-transform hover:scale-[1.01]"
-              style={{ animationDelay: `${(idx + 1) * 0.1}s` }}
+              className="flex items-center justify-between"
             >
-              <div className="flex items-center">
-                <span
-                  className="result-icon font-bold"
-                  style={{ background: item.iconBg, color: item.color }}
+              <div className="flex items-center gap-4">
+                <div 
+                  className="flex h-[40px] w-[40px] items-center justify-center rounded-[8px] text-white"
+                  style={{ background: item.iconBg }}
                 >
                   {item.icon}
-                </span>
-                <span className="text-slate-600">{item.label}</span>
+                </div>
+                <span className="text-[15px] md:text-[17px] font-medium text-[#5C5C5C] font-inter">{item.label}</span>
               </div>
-              <span className={`font-bold ${item.valColor}`}>{item.value}</span>
+              <span className="text-[17px] md:text-[20px] font-bold text-[#1C3141] font-inter">{item.value}</span>
             </div>
           ))}
         </div>
 
+        {/* Done Button */}
         <button
           onClick={handleDone}
-          className="primary-btn mt-8 transition-transform active:scale-[0.98]"
+          style={{
+            height: '48px',
+            borderRadius: '10px',
+            background: '#1C3141',
+          }}
+          className="w-full max-w-[429px] text-[16px] font-bold text-white shadow-lg transition-all hover:brightness-110 active:scale-[0.98]"
         >
           Done
         </button>

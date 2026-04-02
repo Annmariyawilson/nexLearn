@@ -1,4 +1,4 @@
-// app/(auth)/layout.tsx  — or components/auth/AuthLayout.tsx
+// components/auth/AuthLayout.tsx
 
 import Image from "next/image";
 
@@ -10,33 +10,38 @@ export default function AuthLayout({
   return (
     <main className="auth-bg">
       <div className="auth-shell">
-        {/* Left panel with logo + illustration */}
+        {/* LEFT PANEL: Branded Dark Foundation */}
         <section className="left-panel">
-          <div className="branding-wrap">
+          {/* LOGO: Centered at the top */}
+          <div className="w-full flex justify-center">
             <Image
               src="/assets/logo_white.png"
-              alt="NexLearn"
-              width={180}
-              height={56}
-              className="top-logo"
+              alt="NexLearn Identity"
+              width={240}
+              height={80}
+              className="object-contain top-logo"
               priority
             />
           </div>
-          <div className="illustration-wrap animate-fade-in-up">
+
+          {/* ILLUSTRATION: Larger centered illustration */}
+          <div className="w-full flex justify-center pb-2 animate-fade-in-up">
             <Image
               src="/assets/group.png"
-              alt="Learning illustration"
-              width={300}
-              height={260}
-              className="bottom-illustration"
-              style={{ height: "auto" }}
+              alt="Interactive Learning"
+              width={440}
+              height={380}
+              className="object-contain"
+              style={{ height: "auto", maxWidth: "90%" }}
               priority
             />
           </div>
         </section>
 
-        {/* Right form area */}
-        <section className="right-panel">{children}</section>
+        {/* RIGHT PANEL: White Interaction Card */}
+        <section className="right-panel">
+          {children}
+        </section>
       </div>
     </main>
   );

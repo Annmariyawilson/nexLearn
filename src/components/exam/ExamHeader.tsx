@@ -7,22 +7,37 @@ interface ExamHeaderProps {
 
 function ExamHeader({ onLogout }: ExamHeaderProps) {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200 h-[64px] flex items-center justify-between px-8 shadow-sm">
-      <div className="flex items-center">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-100 h-[80px] flex lg:grid lg:grid-cols-3 items-center justify-between px-4 md:px-[60px] lg:px-[80px] shadow-sm">
+      <div className="hidden lg:block" /> {/* Left spacer for centering on desktop */}
+      
+      <div className="flex justify-start lg:justify-center">
         <Image
           src="/assets/logo_blue.png"
           alt="NexLearn"
           width={130}
           height={40}
-          className="h-9 w-auto"
+          className="w-[110px] md:w-[130px] lg:w-[160px] h-auto object-contain"
           priority
         />
       </div>
 
-      <div className="flex items-center">
+      <div className="flex justify-end">
         <button
           onClick={onLogout}
-          className="bg-[#0e7490] text-white px-7 py-2 rounded text-[13px] font-bold hover:brightness-110 transition-all border border-[#0d6d87]"
+          style={{
+            width: '90px',
+            height: '40px',
+            borderRadius: '6px',
+            background: '#177A9C',
+            fontFamily: 'Inter',
+            fontWeight: 500,
+            fontSize: '13px',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          className="hover:bg-[#156d8c] transition-all"
         >
           Logout
         </button>

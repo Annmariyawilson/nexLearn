@@ -18,12 +18,8 @@ const profileSchema = z.object({
   qualification: z.string().min(2, "Qualification is required"),
   profile_image: z
     .any()
-    .refine((file) => file instanceof File, "Profile image is required")
-    .refine((file) => file?.size <= 5 * 1024 * 1024, "Image must be less than 5MB")
-    .refine(
-      (file) => ["image/jpeg", "image/png", "image/jpg"].includes(file?.type),
-      "Only JPG, JPEG or PNG formats are supported"
-    ),
+    .refine((file) => file instanceof File || file === null, "Profile image is required")
+    .nullable(),
 });
 
 type ProfileInputs = z.infer<typeof profileSchema>;
@@ -46,13 +42,14 @@ export default function ProfileForm() {
     register,
     handleSubmit,
     setValue,
-    watch,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<ProfileInputs>({
     resolver: zodResolver(profileSchema),
+    mode: "onChange",
+    defaultValues: {
+      profile_image: null
+    }
   });
-
-  const profileImage = watch("profile_image");
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -62,10 +59,22 @@ export default function ProfileForm() {
     setPreview(URL.createObjectURL(file));
   };
 
+  const removeImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setValue("profile_image", null, { shouldValidate: true });
+    setPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const onFormSubmit = async (data: ProfileInputs) => {
     if (!mobileNumber) {
       alert("Mobile number not found. Please login again.");
       router.replace("/");
+      return;
+    }
+
+    if (!data.profile_image) {
+      alert("Please upload a profile picture.");
       return;
     }
 
@@ -94,12 +103,6 @@ export default function ProfileForm() {
         dispatch(setUser(resData.user));
       }
 
-      const token = resData?.access_token || getAccessToken();
-      if (!token) {
-        alert("Success, but no access token returned.");
-        return;
-      }
-
       router.replace("/exam");
     } catch (error) {
       console.error(error);
@@ -110,117 +113,119 @@ export default function ProfileForm() {
   };
 
   return (
-    <div className="pt-1">
-      <h2 className="auth-title">Add Your Details</h2>
+    <div className="flex flex-col justify-between h-full w-full">
+      {/* ── TOP SECTION ── */}
+      <div className="flex flex-col">
+        <h1 className="auth-title">Add Your Details</h1>
 
-      <form onSubmit={handleSubmit(onFormSubmit)} className="mt-5">
-        {/* Profile Image Upload */}
-        <div className="mb-6 flex flex-col items-center">
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className={`relative flex h-[92px] w-[92px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded border border-dashed transition-colors hover:border-sky-400 ${
-              errors.profile_image ? "border-red-400 bg-red-50" : "border-gray-300 bg-gray-50"
-            }`}
-          >
-            {preview ? (
-              <Image
-                src={preview}
-                alt="Profile preview"
-                width={92}
-                height={92}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex flex-col items-center gap-1 text-gray-400">
-                <svg
-                  width="28"
-                  height="28"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                  <circle cx="12" cy="13" r="4" />
-                </svg>
-                <span className="px-1 text-center text-[9px] font-medium leading-tight">
-                  Add your photo here
-                </span>
+        <form onSubmit={handleSubmit(onFormSubmit)} className="mt-2">
+          {/* ── PROFILE PICTURE UPLOAD ── */}
+          <div className="flex justify-center mb-6">
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className={`relative cursor-pointer flex flex-col items-center justify-center border-dashed border-[1.5px] rounded-[16px] transition-all
+                ${errors.profile_image ? "border-red-400 bg-red-50" : "border-[#E2E8F0] hover:border-[#1C3141]"}
+              `}
+              style={{ width: '132px', height: '127px' }}
+            >
+              {preview ? (
+                <>
+                  <Image
+                    src={preview}
+                    alt="Profile"
+                    fill
+                    className="object-cover rounded-[16px]"
+                  />
+                  {/* Close Icon */}
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 bg-[#1C3141] text-white rounded-full p-1 shadow-lg hover:bg-black transition-colors"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </>
+              ) : (
+                <div className="flex flex-col items-center text-center px-2">
+                  <div className="bg-[#F8FAFC] p-3 rounded-full mb-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1C3141" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                      <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                  </div>
+                  <span className="text-[10px] font-medium text-[#1C3141] leading-tight opacity-70">
+                    Add your Profile picture
+                  </span>
+                </div>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleImage}
+            />
+          </div>
+
+          {/* ── FORM FIELDS WITH FLOATING LABELS ── */}
+          <div className="space-y-5">
+            {/* Name */}
+            <div className="relative">
+              <span className="phone-floating-label">Name*</span>
+              <div className={`exact-phone-field ${errors.name ? "!border-red-400" : ""}`}>
+                <input
+                  {...register("name")}
+                  className="w-full h-full bg-transparent outline-none border-none text-[16px] text-[#1C3141] font-medium placeholder:text-[#94A3B8]"
+                  placeholder="Enter your Full Name"
+                />
               </div>
-            )}
-          </button>
-          {errors.profile_image && (
-            <span className="mt-1.5 text-[10px] font-medium text-red-500">
-              {errors.profile_image.message as string}
-            </span>
-          )}
+              {errors.name && <p className="mt-1 text-[10px] text-red-500 font-medium pl-1">{errors.name.message}</p>}
+            </div>
 
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleImage}
-          />
-        </div>
+            {/* Email */}
+            <div className="relative">
+              <span className="phone-floating-label">Email*</span>
+              <div className={`exact-phone-field ${errors.email ? "!border-red-400" : ""}`}>
+                <input
+                  {...register("email")}
+                  className="w-full h-full bg-transparent outline-none border-none text-[16px] text-[#1C3141] font-medium placeholder:text-[#94A3B8]"
+                  placeholder="Enter your Email Address"
+                />
+              </div>
+              {errors.email && <p className="mt-1 text-[10px] text-red-500 font-medium pl-1">{errors.email.message}</p>}
+            </div>
 
-        {/* Name Input */}
-        <div className="mb-4">
-          <label className="mb-1.5 block text-[12px] font-medium text-slate-500">
-            Name*
-          </label>
-          <input
-            {...register("name")}
-            className={`input-base ${errors.name ? "border-red-400 focus:ring-red-100" : ""}`}
-            placeholder="Enter your Full Name"
-          />
-          {errors.name && (
-            <span className="mt-1 block text-[10px] font-medium text-red-500">
-              {errors.name.message}
-            </span>
-          )}
-        </div>
+            {/* Qualification */}
+            <div className="relative">
+              <span className="phone-floating-label">Your qualification*</span>
+              <div className={`exact-phone-field ${errors.qualification ? "!border-red-400" : ""}`}>
+                <input
+                  {...register("qualification")}
+                  className="w-full h-full bg-transparent outline-none border-none text-[16px] text-[#1C3141] font-medium placeholder:text-[#94A3B8]"
+                  placeholder="Enter your qualification"
+                />
+              </div>
+              {errors.qualification && <p className="mt-1 text-[10px] text-red-500 font-medium pl-1">{errors.qualification.message}</p>}
+            </div>
+          </div>
+        </form>
+      </div>
 
-        {/* Email Input */}
-        <div className="mb-4">
-          <label className="mb-1.5 block text-[12px] font-medium text-slate-500">
-            Email
-          </label>
-          <input
-            {...register("email")}
-            type="email"
-            className={`input-base ${errors.email ? "border-red-400 focus:ring-red-100" : ""}`}
-            placeholder="Enter your Email Address"
-          />
-          {errors.email && (
-            <span className="mt-1 block text-[10px] font-medium text-red-500">
-              {errors.email.message}
-            </span>
-          )}
-        </div>
-
-        {/* Qualification Input */}
-        <div className="mb-4">
-          <label className="mb-1.5 block text-[12px] font-medium text-slate-500">
-            Your qualification*
-          </label>
-          <input
-            {...register("qualification")}
-            className={`input-base ${errors.qualification ? "border-red-400 focus:ring-red-100" : ""}`}
-            placeholder="Enter your qualification"
-          />
-          {errors.qualification && (
-            <span className="mt-1 block text-[10px] font-medium text-red-500">
-              {errors.qualification.message}
-            </span>
-          )}
-        </div>
-
-        <button className="primary-btn mt-6" type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Get Started"}
+      {/* ── BUTTON SECTION ── */}
+      <div className="mt-8">
+        <button
+          className="primary-btn"
+          type="button"
+          onClick={handleSubmit(onFormSubmit)}
+          disabled={loading || !isValid}
+        >
+          {loading ? "Saving Profile..." : "Get Started"}
         </button>
-      </form>
+      </div>
     </div>
   );
 }
