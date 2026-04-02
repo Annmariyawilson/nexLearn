@@ -1,26 +1,450 @@
 @import "tailwindcss";
+@import "react-phone-number-input/style.css";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --auth-heading: #1e293b;
+  --auth-subtext: #64748b;
+  --auth-border: #e2e8f0;
+  --auth-btn: #1f2d3d;
+  --logout-btn: #177a9c;
+  --page-bg: #edf2f5;
+  --brand-blue: #2b4558;
+  --brand-dark: #1f3647;
+  --teal: #0e7490;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  padding: 0;
+  margin: 0;
+  min-height: 100%;
+  font-family: Inter, Arial, Helvetica, sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page-bg);
+  color: #111827;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* =========================
+   AUTH BACKGROUND
+========================= */
+.auth-bg {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background: url('/assets/bg.jpg') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  overflow-x: hidden;
+}
+
+/* Background Dark Overlay */
+.auth-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #00000099; /* 60% opacity black */
+  z-index: 0;
+}
+
+.auth-shell {
+  position: relative;
+  z-index: 1;
+  width: 900px;
+  max-width: 100%;
+  min-height: 540px;
+  display: flex;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.45);
+}
+
+/* =========================
+   LEFT PANEL
+========================= */
+.left-panel {
+  flex: 1;
+  background: #1c2b38; /* Figma dark bluish tone */
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Centering vertically */
+  text-align: center;
+  position: relative;
+}
+
+.branding-wrap {
+  margin-bottom: 40px;
+}
+
+.top-logo {
+  width: 160px;
+  height: auto;
+  object-fit: contain;
+}
+
+.illustration-wrap {
+  width: 100%;
+  max-width: 300px;
+}
+
+.bottom-illustration {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* =========================
+   RIGHT PANEL (FORM)
+========================= */
+.right-panel {
+  flex: 1;
+  background: #ffffff;
+  padding: 60px 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  /* Premium subtle gradient border */
+  border: 1px solid transparent;
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image: linear-gradient(to right, #fff, #fff), 
+                    linear-gradient(180deg, #1C3141 28.73%, #487EA7 233.43%);
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+.auth-title {
+  margin: 0;
+  color: #1e293b;
+  font-size: 28px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.auth-subtitle {
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.6;
+  font-weight: 400;
+  margin: 16px 0 0 0;
+}
+
+.auth-label {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.auth-muted {
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.login-form-body {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+}
+
+.floating-label {
+  position: absolute;
+  top: -10px;
+  left: 12px;
+  z-index: 10;
+  background: white;
+  padding: 0 4px;
+}
+
+.exact-phone-field {
+  width: 100%;
+  height: 58px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.exact-phone-field:focus-within {
+  border-color: #1f2d3d;
+  box-shadow: 0 0 0 4px rgba(31, 45, 61, 0.05);
+}
+
+.exact-phone-field .PhoneInput {
+  width: 100%;
+}
+
+.exact-phone-field .PhoneInputInput {
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  color: #1e293b;
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+.login-terms {
+  margin-top: 28px;
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* Buttons */
+.primary-btn {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 10px;
+  background: #1f2d3d;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 32px;
+}
+
+.primary-btn:hover {
+  background: #2c3e50;
+  transform: translateY(-1px);
+}
+
+.primary-btn:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.logout-btn {
+  height: 38px;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 20px;
+  background: #0e7490;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* =========================
+   PROFILE IMAGE
+========================= */
+.profile-upload-box {
+  width: 92px;
+  height: 92px;
+  border: 1px dashed #d2d2d2;
+  border-radius: 6px;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  margin: 0 auto 14px auto;
+}
+
+/* =========================
+   EXAM
+========================= */
+.exam-topbar {
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid #dbe3e8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+}
+
+.exam-logo-blue {
+  width: 115px;
+  height: auto;
+  display: block;
+}
+
+.exam-card {
+  background: white;
+  border: 1px solid #dbe3e8;
+  border-radius: 4px;
+}
+
+.option-row {
+  border: 1px solid #cfd8df;
+  background: #fff;
+  border-radius: 3px;
+  min-height: 44px;
+}
+
+.secondary-btn {
+  height: 44px;
+  border-radius: 4px;
+  background: #d9d9d9;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+
+.shadow-soft {
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* =========================
+   RESULT PAGE
+========================= */
+.result-card {
+  background: var(--brand-dark);
+  color: white;
+  border-radius: 8px;
+  padding: 24px 32px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.result-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.result-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  margin-right: 12px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+@media (max-width: 840px) {
+  .auth-bg {
+    padding: 24px 16px;
+  }
+
+  .auth-shell {
+    width: 100%;
+    max-width: 480px;
+    min-height: auto;
+    flex-direction: column;
+    height: auto;
+    border-radius: 12px;
+  }
+
+  .left-panel {
+    flex: none;
+    padding: 40px 24px;
+    height: auto;
+  }
+
+  .branding-wrap {
+    margin-bottom: 24px;
+  }
+
+  .top-logo {
+    width: 140px;
+  }
+
+  .bottom-illustration {
+    max-width: 240px;
+  }
+
+  .right-panel {
+    flex: none;
+    width: 100%;
+    padding: 40px 28px;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .auth-title {
+    font-size: 24px;
+  }
+
+  .auth-subtitle {
+    font-size: 14px;
+  }
+
+  .login-form-body {
+    margin-top: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .left-panel {
+    min-height: 200px;
+  }
+
+  .right-panel {
+    padding: 24px 16px;
+  }
+}
+
+/* =========================
+   ANIMATIONS
+   ========================= */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out forwards;
+}
+
+/* =========================
+   SKELETON SHIMMER 
+   ========================= */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: -webkit-linear-gradient(90deg, #f0f3f5 25%, #e1e7eb 50%, #f0f3f5 75%);
+  background: linear-gradient(90deg, #f0f3f5 25%, #e1e7eb 50%, #f0f3f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
 }

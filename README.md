@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# NexLearn - Advanced Next.js 15+ Examination Platform
 
-## Getting Started
+NexLearn is a premium, high-performance examination platform built as part of a front-end machine test. It features a robust JWT authentication flow, deep state management, and a high-fidelity exam dashboard with real-time tracking and automated status updates.
 
-First, run the development server:
+## 🚀 Key Features
+- **OTP-Based Authentication**: Seamless identity verification via SMS OTP flow.
+- **Dynamic Profile Creation**: Forced profile setup for new users with mandatory image uploads and validation.
+- **Advanced Exam Interface**: A real-time MCQ environment with:
+  - Time-remaining synchronized countdown.
+  - Interactive question palette (Attended, Review, Marked statuses).
+  - Modal-based comprehensive reading support.
+- **End-to-End JWT Security**: Middleware-protected private routes with automated token refresh via Axios interceptors.
+- **Responsive "Glassmorphism" UI**: Pixel-perfect implementation of provided design assets using Tailwind 4.
+- **Deep Result Analysis**: Automated score calculation and performance breakdown.
 
+## 🛠️ Technical Stack
+- **Framework**: Next.js 15.2.2 (App Router)
+- **State Management**: Redux Toolkit (RTK)
+- **Validation**: Zod + React Hook Form
+- **API Client**: Axios with interceptors
+- **Styling**: Tailwind CSS 4 + Headless UI patterns
+- **Data Integrity**: TypeScript (Strict Mode)
+
+## 📁 Architecture Decisions
+
+### 1. CORS & Security (API Proxy)
+To bypass CORS restrictions while maintaining production-standard security, the application uses **Next.js API Route Handlers** (`src/app/api/...`) as a local proxy. This allows sensitive headers (like `Authorization`) to be forwarded securely from the server-side, shielding the upstream API backend.
+
+### 2. JWT Strategy & Lifecycle
+- **Storage**: Tokens are stored in **both** encrypted `cookies` (for SSR/Middleware protection) and `localStorage` (for fast client-side hydration).
+- **Auto-Refresh**: Implemented a thread-safe Axios interceptor that catches 401 errors, uses the `refresh_token` to get a new session, and transparently retries failed requests without user intervention.
+
+### 3. Question Normalization
+The upstream API uses irregular naming conventions (`question_id` vs `id`). I implemented a normalization layer in `src/lib/api.ts` that standardizes every question and option into a consistent `number | string` format before they enter the Redux store, preventing runtime crashes.
+
+### 4. Accessibility (a11y)
+The application leverages semantic HTML5 tags and leverages ARIA roles for modal dialogs and interactive palette indicators to ensure the platform is usable for all learners.
+
+## 🏁 Getting Started
+
+### 1. Prerequisites
+- Node.js 20+
+
+### 2. Installation
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Environment Setup
+Create a `.env.local` file:
+```env
+NEXT_PUBLIC_API_BASE_URL=/api
+REMOTE_API_BASE_URL=https://nexlearn.noviindusdemosites.in
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Run Development
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The app will be available at `http://localhost:3000`.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+© 2026 NexLearn Machine Test - Developed by Akshat# nexLearn
