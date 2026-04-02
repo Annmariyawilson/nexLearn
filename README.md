@@ -1,36 +1,55 @@
-# NexLearn
+# Overview
 
-NexLearn is a premium, high-performance examination platform built with **Next.js 15+**. It provides a seamless, secure environment for users to take machine tests and view real-time results.
-
-## Key Features
-
-- **OTP Authentication**: Secure login flow with profile setup.
-- **Dynamic Exam Interface**: Real-time MCQ environment with time tracking.
-- **Premium UI**: Modern glassmorphism design with full responsiveness.
+This project is a Next.js-based web application developed as part of a Front-End Machine Test. It replicates the provided Figma design with a focus on performance, responsiveness, and clean code practices.
 
 ## Tech Stack
+- **Next.js**
+- **Tailwind CSS**
+- **JavaScript**
+- **Axios** (API handling)
 
-- **Framework**: Next.js 15 (App Router)
-- **State**: Redux Toolkit (RTK)
-- **Styling**: Tailwind CSS
+## Features
+- Pixel-perfect UI based on Figma design
+- Fully responsive (mobile, tablet, desktop)
+- OTP-based authentication flow
+- JWT token handling
+- Clean and structured codebase
+- SEO-friendly structure
+- Optimized performance
 
-## Getting Started
+## Authentication Flow
+1. **Send OTP**
+2. **Verify OTP**
+3. **Create Profile**
+4. **Access protected routes**
 
-1. **Install dependencies**:
-  
-   npm install
-  
+## API Integration
+Integrated with provided backend APIs for:
+- Authentication (OTP login)
+- User profile creation
+- Questions listing
+- Answer submission
 
-2. **Configure Environment**:
-   Create a `.env.local` and add:
-   ```env
-   NEXT_PUBLIC_API_BASE_URL=/api
-   REMOTE_API_BASE_URL=https://nexlearn.noviindusdemosites.in
-   ```
+## Project Setup
 
-3. **Run the app**:
-   ```bash
-   npm run dev
-   ```
+### 1. Clone the repository
+```bash
+git clone https://github.com/Annmariyawilson/nexLearn.git
+```
 
-The application will be available at `http://localhost:3000`.
+### 2. Navigate to project
+```bash
+cd nexLearn
+```
+
+### 3. Install dependencies
+```bash
+npm install
+```
+
+### 4. Run development server
+```bash
+npm run dev
+```
+
+App will run on: [http://localhost:3000](http://localhost:3000)
